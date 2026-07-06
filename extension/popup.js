@@ -1,32 +1,35 @@
+const fileInput = document.getElementById("fileInput");
 const input = document.getElementById("input");
 const generateButton = document.getElementById("generate");
 const statusBox = document.getElementById("status");
 
-generateButton.addEventListener("click", async () => {
-  const scriptText = input.value.trim();
+fileInput.addEventListener("change", async () => {
+  const file = fileInput.files[0];
 
-  if (!scriptText) {
-    statusBox.textContent = "Paste some block script first.";
+  if (!file) return;
+
+  input.value = await file.text();
+  statusBox.textContent = `Loaded ${file.name}`;
+});
+
+generateButton.addEventListener("click", async () => {
+  const xmlText = input.value.trim();
+
+  if (!xmlText) {
+    statusBox.textContent = "Choose or paste an XML file first.";
     return;
   }
-
-  statusBox.textContent = "Sending to App Inventor...";
 
   const [tab] = await chrome.tabs.query({
     active: true,
     currentWindow: true
   });
 
-  if (!tab || !tab.id) {
-    statusBox.textContent = "Could not find active tab.";
-    return;
-  }
-
   chrome.tabs.sendMessage(
     tab.id,
     {
       type: "AI2BLOCKS_GENERATE",
-      scriptText
+      scriptText: xmlText
     },
     (response) => {
       if (chrome.runtime.lastError) {
@@ -34,11 +37,9 @@ generateButton.addEventListener("click", async () => {
         return;
       }
 
-      if (response?.ok) {
-        statusBox.textContent = "Message sent successfully.";
-      } else {
-        statusBox.textContent = response?.error || "Something went wrong.";
-      }
+      statusBox.textContent = response?.ok
+        ? "XML sent to App Inventor."
+        : response?.error || "Import failed.";
     }
   );
 });

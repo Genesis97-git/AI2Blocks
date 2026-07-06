@@ -1,17 +1,19 @@
 console.log("[AI2Blocks] Injected script loaded");
 
+function importXml(xmlText) {
+  const ws = Blockly.getMainWorkspace();
+
+  const xml = new DOMParser()
+    .parseFromString(xmlText, "text/xml")
+    .documentElement;
+
+  Blockly.Xml.domToWorkspace(xml, ws);
+}
+
 window.AI2Blocks = {
-  generate(scriptText) {
-    console.log("[AI2Blocks] Generating blocks from:");
-    console.log(scriptText);
-
-    // TODO: call parser here
-    const ws = Blockly.getMainWorkspace();
-
-	const b = ws.newBlock("text");
-	b.initSvg();
-	b.render();
-	b.moveBy(100, 100);
+  generate(xmlText) {
+    console.log("[AI2Blocks] Importing XML...");
+    importXml(xmlText);
   }
 };
 

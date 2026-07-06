@@ -33,9 +33,11 @@
 <body>
   <h2>AI2Blocks</h2>
 
-  <textarea id="input" placeholder="Paste AI2Blocks script here..."></textarea>
+  <input type="file" id="fileInput" accept=".xml,text/xml">
 
-  <button id="generate">Generate Blocks</button>
+  <textarea id="input" placeholder="Or paste Blockly XML here..."></textarea>
+
+  <button id="generate">Import XML</button>
 
   <div id="status"></div>
 
