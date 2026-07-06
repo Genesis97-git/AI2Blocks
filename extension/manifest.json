@@ -7,6 +7,7 @@
   "host_permissions": [
     "https://ai2.appinventor.mit.edu/*",
     "https://ai2-test.appinventor.mit.edu/*",
+	"https://ai2a.appinventor.mit.edu/*",
 	"https://code2.appinventor.mit.edu/*"
   ],
   "action": {
@@ -18,6 +19,7 @@
       "matches": [
         "https://ai2.appinventor.mit.edu/*",
         "https://ai2-test.appinventor.mit.edu/*",
+		"https://ai2a.appinventor.mit.edu/*",
 		"https://code2.appinventor.mit.edu/*"
       ],
       "js": ["content.js"],
@@ -30,6 +32,7 @@
       "matches": [
         "https://ai2.appinventor.mit.edu/*",
         "https://ai2-test.appinventor.mit.edu/*",
+		"https://ai2a.appinventor.mit.edu/*",
 		"https://code2.appinventor.mit.edu/*"
       ]
     }

@@ -1,3 +1,20 @@
+console.log("[AI2Blocks] Injected script loaded");
+
+window.AI2Blocks = {
+  generate(scriptText) {
+    console.log("[AI2Blocks] Generating blocks from:");
+    console.log(scriptText);
+
+    // TODO: call parser here
+    const ws = Blockly.getMainWorkspace();
+
+	const b = ws.newBlock("text");
+	b.initSvg();
+	b.render();
+	b.moveBy(100, 100);
+  }
+};
+
 window.addEventListener("message", (event) => {
   if (event.source !== window) return;
 
@@ -7,8 +24,5 @@ window.addEventListener("message", (event) => {
     return;
   }
 
-  console.log("[AI2Blocks] Received script:");
-  console.log(message.scriptText);
-
-  alert("AI2Blocks received script. Check console.");
+  window.AI2Blocks.generate(message.scriptText);
 });
