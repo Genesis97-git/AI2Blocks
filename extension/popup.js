@@ -13,7 +13,16 @@ fileInput.addEventListener("change", async () => {
 });
 
 generateButton.addEventListener("click", async () => {
-  const xmlText = input.value.trim();
+  let xmlText = input.value.trim();
+
+  if (!xmlText.startsWith("<xml")) {
+    try {
+      xmlText = scriptToXml(xmlText);
+    } catch (error) {
+      statusBox.textContent = error.message;
+      return;
+    }
+  }
 
   if (!xmlText) {
     statusBox.textContent = "Choose or paste an XML file first.";
