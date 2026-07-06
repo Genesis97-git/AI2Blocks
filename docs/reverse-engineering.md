@@ -55,6 +55,45 @@ Example inspected block:
 when Button1.Click
 ```
 
+## Loading XML into Workspace
+
+App Inventor's Blockly build does not expose the standard `Blockly.Xml.textToDom()` function.
+
+Instead, use the browser `DOMParser`:
+
+```js
+const ws = Blockly.getMainWorkspace();
+
+const xmlText = `
+<xml>
+  <block type="component_event" x="100" y="100">
+    <mutation
+      component_type="Button"
+      is_generic="false"
+      instance_name="Button1"
+      event_name="Click">
+    </mutation>
+  </block>
+</xml>
+`;
+
+const xml = new DOMParser().parseFromString(xmlText, "text/xml").documentElement;
+
+Blockly.Xml.domToWorkspace(xml, ws);
+```
+This successfully creates:
+
+```text
+when Button1.Click
+```
+
+For a single block, this also works:
+
+```js
+const blockXml = new DOMParser().parseFromString(xmlText, "text/xml").documentElement;
+Blockly.Xml.domToBlock(blockXml, ws);
+```
+
 ### Block Type
 
 ```js
