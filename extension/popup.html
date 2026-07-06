@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AI2Blocks</title>
+  <style>
+    body {
+      width: 360px;
+      font-family: Arial, sans-serif;
+      padding: 12px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 180px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    #status {
+      margin-top: 10px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <h2>AI2Blocks</h2>
+
+  <textarea id="input" placeholder="Paste AI2Blocks script here..."></textarea>
+
+  <button id="generate">Generate Blocks</button>
+
+  <div id="status"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
