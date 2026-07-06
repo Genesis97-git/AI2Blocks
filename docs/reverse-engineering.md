@@ -94,6 +94,56 @@ const blockXml = new DOMParser().parseFromString(xmlText, "text/xml").documentEl
 Blockly.Xml.domToBlock(blockXml, ws);
 ```
 
+## Property Setter Block
+
+Example:
+
+```text
+set Label1.Text to "Hello"
+```
+
+Block type:
+```text
+component_set_get
+```
+Mutation:
+```js
+<mutation
+  component_type="Label"
+  set_or_get="set"
+  property_name="Text"
+  is_generic="false"
+  instance_name="Label1">
+</mutation>
+```
+The value input is named:
+```text
+VALUE
+```
+Text literal block:
+```js
+<block type="text">
+  <field name="TEXT">Hello</field>
+</block>
+```
+Full setter XML:
+```js
+<block type="component_set_get" x="100" y="220">
+  <mutation
+    component_type="Label"
+    set_or_get="set"
+    property_name="Text"
+    is_generic="false"
+    instance_name="Label1">
+  </mutation>
+  <value name="VALUE">
+    <block type="text">
+      <field name="TEXT">Hello</field>
+    </block>
+  </value>
+</block>
+```
+
 ### Block Type
 
 ```js
