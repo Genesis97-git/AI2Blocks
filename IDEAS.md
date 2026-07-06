@@ -27,3 +27,22 @@
 * Create a reusable Blockly generation library.
 * Provide an API for third-party integrations.
 * Build an open-source ecosystem around AI-assisted visual programming.
+
+## Template Library
+
+Store reusable Blockly XML templates locally.
+
+Examples:
+
+- Login screen
+- Navigation drawer
+- Color picker
+- Canvas paint app
+- Sprite movement
+- Firebase initialization
+- Bluetooth connection
+- TinyDB helpers
+- Permission request
+- Camera import
+
+Templates can be inserted into the current project with one click.
