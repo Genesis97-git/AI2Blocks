@@ -1,0 +1,31 @@
+class Program {
+    constructor(body = []) {
+        this.type = "Program";
+        this.body = body;
+    }
+}
+
+class ComponentEvent {
+    constructor(component, event, body = []) {
+        this.type = "ComponentEvent";
+        this.component = component;
+        this.event = event;
+        this.body = body;
+    }
+}
+
+class SetProperty {
+    constructor(component, property, value) {
+        this.type = "SetProperty";
+        this.component = component;
+        this.property = property;
+        this.value = value;
+    }
+}
+
+class StringLiteral {
+    constructor(value) {
+        this.type = "StringLiteral";
+        this.value = value;
+    }
+}

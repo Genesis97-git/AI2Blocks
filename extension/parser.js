@@ -11,25 +11,17 @@ function parseAI2BlocksScript(scriptText) {
     throw new Error('Supported format: when Button1.Click / set Label1.Text to "Hello"');
   }
 
-  return {
-    type: "Program",
-    body: [
-      {
-        type: "ComponentEvent",
-        component: eventMatch[1],
-        event: eventMatch[2],
-        body: [
-          {
-            type: "SetProperty",
-            component: setterMatch[1],
-            property: setterMatch[2],
-            value: {
-              type: "StringLiteral",
-              value: setterMatch[3]
-            }
-          }
-        ]
-      }
-    ]
-  };
+  return new Program([
+    new ComponentEvent(
+      eventMatch[1],
+      eventMatch[2],
+      [
+        new SetProperty(
+          setterMatch[1],
+          setterMatch[2],
+          new StringLiteral(setterMatch[3])
+        )
+      ]
+    )
+  ]);
 }
