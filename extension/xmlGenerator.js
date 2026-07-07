@@ -16,6 +16,12 @@ function generateNode(node) {
     case "StringLiteral":
       return generateStringLiteral(node);
 
+    case "NumberLiteral":
+      return generateNumberLiteral(node);
+
+    case "BooleanLiteral":
+      return generateBooleanLiteral(node);
+
     default:
       throw new Error(`Unsupported AST node type: ${node.type}`);
   }
@@ -57,6 +63,20 @@ function generateStringLiteral(node) {
   return `
 <block type="text">
   <field name="TEXT">${escapeXml(node.value)}</field>
+</block>`.trim();
+}
+
+function generateNumberLiteral(node) {
+  return `
+<block type="math_number">
+  <field name="NUM">${escapeXml(node.value)}</field>
+</block>`.trim();
+}
+
+function generateBooleanLiteral(node) {
+  return `
+<block type="logic_boolean">
+  <field name="BOOL">${node.value ? "TRUE" : "FALSE"}</field>
 </block>`.trim();
 }
 

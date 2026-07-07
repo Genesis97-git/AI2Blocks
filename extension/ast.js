@@ -29,3 +29,17 @@ class StringLiteral {
         this.value = value;
     }
 }
+
+class NumberLiteral {
+  constructor(value) {
+    this.type = "NumberLiteral";
+    this.value = Number(value);
+  }
+}
+
+class BooleanLiteral {
+  constructor(value) {
+    this.type = "BooleanLiteral";
+    this.value = value === true || value === "true";
+  }
+}

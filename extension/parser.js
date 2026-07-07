@@ -13,7 +13,7 @@ function parseAI2BlocksScript(scriptText) {
   const statements = [];
 
   for (let i = 1; i < lines.length; i++) {
-    const setterMatch = lines[i].match(/^set\s+(\w+)\.(\w+)\s+to\s+"(.*)"$/);
+    const setterMatch = lines[i].match(/^set\s+(\w+)\.(\w+)\s+to\s+(.+)$/);
 
     if (!setterMatch) {
       throw new Error(`Unsupported line: ${lines[i]}`);
@@ -23,7 +23,7 @@ function parseAI2BlocksScript(scriptText) {
       new SetProperty(
         setterMatch[1],
         setterMatch[2],
-        new StringLiteral(setterMatch[3])
+        parseValue(setterMatch[3])
       )
     );
   }
@@ -35,4 +35,20 @@ function parseAI2BlocksScript(scriptText) {
       statements
     )
   ]);
+}
+
+function parseValue(rawValue) {
+  if (/^".*"$/.test(rawValue)) {
+    return new StringLiteral(rawValue.slice(1, -1));
+  }
+
+  if (/^-?\d+(\.\d+)?$/.test(rawValue)) {
+    return new NumberLiteral(rawValue);
+  }
+
+  if (rawValue === "true" || rawValue === "false") {
+    return new BooleanLiteral(rawValue);
+  }
+
+  throw new Error(`Unsupported value: ${rawValue}`);
 }
