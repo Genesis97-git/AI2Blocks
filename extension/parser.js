@@ -101,5 +101,14 @@ function parseValue(rawValue) {
     return new BooleanLiteral(rawValue);
   }
 
+  const getterMatch = rawValue.match(/^(\w+)\.(\w+)$/);
+
+  if (getterMatch) {
+    return new GetProperty(
+      getterMatch[1],
+      getterMatch[2]
+    );
+  }
+
   throw new Error(`Unsupported value: ${rawValue}`);
 }

@@ -10,6 +10,9 @@ function generateNode(node) {
     case "ComponentEvent":
       return generateComponentEvent(node);
 
+    case "GetProperty":
+      return generateGetProperty(node);
+
     case "SetProperty":
       return generateSetProperty(node);
 
@@ -63,6 +66,17 @@ function generateComponentEvent(node) {
   <statement name="DO">
     ${bodyXml}
   </statement>
+</block>`.trim();
+}
+
+function generateGetProperty(node) {
+  const componentType = guessComponentType(node.component);
+
+  return `
+<block type="component_set_get">
+  <mutation component_type="${escapeXml(componentType)}" set_or_get="get" property_name="${escapeXml(node.property)}" is_generic="false" instance_name="${escapeXml(node.component)}"></mutation>
+  <field name="COMPONENT_SELECTOR">${escapeXml(node.component)}</field>
+  <field name="PROP">${escapeXml(node.property)}</field>
 </block>`.trim();
 }
 

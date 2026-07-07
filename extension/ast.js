@@ -14,6 +14,14 @@ class ComponentEvent {
     }
 }
 
+class GetProperty {
+  constructor(component, property) {
+    this.type = "GetProperty";
+    this.component = component;
+    this.property = property;
+  }
+}
+
 class SetProperty {
     constructor(component, property, value) {
         this.type = "SetProperty";
