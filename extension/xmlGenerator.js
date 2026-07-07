@@ -1,51 +1,62 @@
-function escapeXml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-}
-
-function guessComponentType(instanceName) {
-  return instanceName.replace(/\d+$/, "");
-}
-
 function generateXmlFromAst(ast) {
-  const eventNode = ast.body[0];
-  const eventType = guessComponentType(eventNode.component);
-  const bodyXml = chainStatements(eventNode.body);
+  return generateNode(ast);
+}
 
+function generateNode(node) {
+  switch (node.type) {
+    case "Program":
+      return generateProgram(node);
+
+    case "ComponentEvent":
+      return generateComponentEvent(node);
+
+    case "SetProperty":
+      return generateSetProperty(node);
+
+    case "StringLiteral":
+      return generateStringLiteral(node);
+
+    default:
+      throw new Error(`Unsupported AST node type: ${node.type}`);
+  }
+}
+
+function generateProgram(node) {
   return `
 <xml>
-  <block type="component_event" x="100" y="100">
-    <mutation component_type="${escapeXml(eventType)}" is_generic="false" instance_name="${escapeXml(eventNode.component)}" event_name="${escapeXml(eventNode.event)}"></mutation>
-    <statement name="DO">
-      ${bodyXml}
-    </statement>
-  </block>
+  ${node.body.map(generateNode).join("\n")}
 </xml>`.trim();
 }
 
-function scriptToXml(scriptText) {
-  const ast = parseAI2BlocksScript(scriptText);
-  return generateXmlFromAst(ast);
+function generateComponentEvent(node) {
+  const componentType = guessComponentType(node.component);
+  const bodyXml = chainStatements(node.body);
+
+  return `
+<block type="component_event" x="100" y="100">
+  <mutation component_type="${escapeXml(componentType)}" is_generic="false" instance_name="${escapeXml(node.component)}" event_name="${escapeXml(node.event)}"></mutation>
+  <statement name="DO">
+    ${bodyXml}
+  </statement>
+</block>`.trim();
 }
 
-function generateStatementXml(statementNode) {
-  if (statementNode.type !== "SetProperty") {
-    throw new Error(`Unsupported statement type: ${statementNode.type}`);
-  }
-
-  const componentType = guessComponentType(statementNode.component);
+function generateSetProperty(node) {
+  const componentType = guessComponentType(node.component);
 
   return `
 <block type="component_set_get">
-  <mutation component_type="${escapeXml(componentType)}" set_or_get="set" property_name="${escapeXml(statementNode.property)}" is_generic="false" instance_name="${escapeXml(statementNode.component)}"></mutation>
+  <mutation component_type="${escapeXml(componentType)}" set_or_get="set" property_name="${escapeXml(node.property)}" is_generic="false" instance_name="${escapeXml(node.component)}"></mutation>
   <value name="VALUE">
-    <block type="text">
-      <field name="TEXT">${escapeXml(statementNode.value.value)}</field>
-    </block>
+    ${generateNode(node.value)}
   </value>
+</block>`.trim();
+}
+
+function generateStringLiteral(node) {
+  return `
+<block type="text">
+  <field name="TEXT">${escapeXml(node.value)}</field>
 </block>`.trim();
 }
 
@@ -55,7 +66,7 @@ function chainStatements(statementNodes) {
   }
 
   function build(index) {
-    const current = generateStatementXml(statementNodes[index]);
+    const current = generateNode(statementNodes[index]);
 
     if (index === statementNodes.length - 1) {
       return current;
@@ -70,4 +81,21 @@ function chainStatements(statementNodes) {
   }
 
   return build(0);
+}
+
+function escapeXml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function guessComponentType(instanceName) {
+  return instanceName.replace(/\d+$/, "");
+}
+
+function scriptToXml(scriptText) {
+  const ast = parseAI2BlocksScript(scriptText);
+  return generateXmlFromAst(ast);
 }
