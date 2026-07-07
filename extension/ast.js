@@ -43,3 +43,19 @@ class BooleanLiteral {
     this.value = value === true || value === "true";
   }
 }
+
+class ComponentMethodCall {
+  constructor(component, method, args = []) {
+    this.type = "ComponentMethodCall";
+    this.component = component;
+    this.method = method;
+    this.args = args;
+  }
+}
+
+class StatementStack {
+  constructor(statements = []) {
+    this.type = "StatementStack";
+    this.statements = statements;
+  }
+}

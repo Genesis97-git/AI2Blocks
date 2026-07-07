@@ -1,43 +1,94 @@
 function parseAI2BlocksScript(scriptText) {
-  const lines = scriptText
-    .split(/\r?\n/)
-    .map(line => line.trim())
-    .filter(Boolean);
+  const paragraphs = scriptText
+    .split(/\n\s*\n/)
+    .map(paragraph =>
+      paragraph
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(Boolean)
+    )
+    .filter(paragraph => paragraph.length > 0);
 
-  const eventMatch = lines[0]?.match(/^when\s+(\w+)\.(\w+)$/);
+  const body = [];
 
-  if (!eventMatch) {
-    throw new Error('First line must be: when Button1.Click');
+  for (const paragraph of paragraphs) {
+    body.push(parseTopLevelGroup(paragraph));
   }
 
-  const statements = [];
+  return new Program(body);
+}
 
-  for (let i = 1; i < lines.length; i++) {
-    const setterMatch = lines[i].match(/^set\s+(\w+)\.(\w+)\s+to\s+(.+)$/);
+function parseTopLevelGroup(lines) {
+  const firstLine = lines[0];
+  const eventMatch = firstLine.match(/^when\s+(\w+)\.(\w+)$/);
 
-    if (!setterMatch) {
-      throw new Error(`Unsupported line: ${lines[i]}`);
-    }
+  if (eventMatch) {
+    const statements = lines.slice(1).map(parseStatement);
 
-    statements.push(
-      new SetProperty(
-        setterMatch[1],
-        setterMatch[2],
-        parseValue(setterMatch[3])
-      )
-    );
-  }
-
-  return new Program([
-    new ComponentEvent(
+    return new ComponentEvent(
       eventMatch[1],
       eventMatch[2],
       statements
-    )
-  ]);
+    );
+  }
+
+  return new StatementStack(lines.map(parseStatement));
+}
+
+function parseEvent(lines, startIndex) {
+  const eventMatch = lines[startIndex].match(/^when\s+(\w+)\.(\w+)$/);
+
+  const statements = [];
+  let i = startIndex + 1;
+
+  while (i < lines.length && !lines[i].startsWith("when ")) {
+    statements.push(parseStatement(lines[i]));
+    i++;
+  }
+
+  return {
+    node: new ComponentEvent(
+      eventMatch[1],
+      eventMatch[2],
+      statements
+    ),
+    nextIndex: i
+  };
+}
+
+function parseStatement(line) {
+  const setterMatch = line.match(/^set\s+(\w+)\.(\w+)\s+to\s+(.+)$/);
+
+  if (setterMatch) {
+    return new SetProperty(
+      setterMatch[1],
+      setterMatch[2],
+      parseValue(setterMatch[3])
+    );
+  }
+
+  const methodMatch = line.match(/^call\s+(\w+)\.(\w+)\((.*)\)$/);
+
+  if (methodMatch) {
+    const rawArgs = methodMatch[3].trim();
+
+    const args = rawArgs
+      ? rawArgs.split(",").map(arg => parseValue(arg.trim()))
+      : [];
+
+    return new ComponentMethodCall(
+      methodMatch[1],
+      methodMatch[2],
+      args
+    );
+  }
+
+  throw new Error(`Unsupported statement: ${line}`);
 }
 
 function parseValue(rawValue) {
+  rawValue = rawValue.trim();
+
   if (/^".*"$/.test(rawValue)) {
     return new StringLiteral(rawValue.slice(1, -1));
   }

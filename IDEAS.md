@@ -83,3 +83,34 @@ Complete App Inventor Project
 Component Creator extension:
 
 [https://wangsk789.github.io/compcreator/](https://wangsk789.github.io/compcreator/)
+
+
+## Text-Based Block Creation
+
+Allow users to create App Inventor blocks by typing block names, properties, and values directly instead of searching through the Blocks palette.
+
+### Example
+
+```text
+set Label1.Visible to true
+set Label1.Height to 50
+set Label1.Width to 125
+set Label1.FontSize to 60
+set Label1.TextColor to red
+set Label1.Text to "This is a test message"
+```
+
+## Block Placement
+
+Improve automatic placement of generated top-level block stacks.
+
+Current approach uses fixed vertical spacing between generated stacks. This works for simple examples but can cause overlap when stacks have different heights.
+
+Future improvements:
+
+- Estimate stack height based on number and type of generated blocks.
+- Place disconnected stacks vertically in the same order as the source text.
+- Add horizontal spacing for separate groups if needed.
+- Avoid overlapping existing blocks in the workspace.
+- Optionally place generated blocks near the current viewport or mouse position.
+- Eventually use actual rendered block dimensions after import for smarter layout.
