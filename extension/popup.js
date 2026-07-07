@@ -2,6 +2,7 @@ const fileInput = document.getElementById("fileInput");
 const input = document.getElementById("input");
 const generateButton = document.getElementById("generate");
 const statusBox = document.getElementById("status");
+const inspectButton = document.getElementById("inspect");
 
 fileInput.addEventListener("change", async () => {
   const file = fileInput.files[0];
@@ -49,6 +50,32 @@ generateButton.addEventListener("click", async () => {
       statusBox.textContent = response?.ok
         ? "XML sent to App Inventor."
         : response?.error || "Import failed.";
+    }
+  );
+});
+
+inspectButton.addEventListener("click", async () => {
+  statusBox.textContent = "Inspecting selected block...";
+
+  const [tab] = await chrome.tabs.query({
+    active: true,
+    currentWindow: true
+  });
+
+  chrome.tabs.sendMessage(
+    tab.id,
+    {
+      type: "AI2BLOCKS_INSPECT_BLOCK"
+    },
+    (response) => {
+      if (chrome.runtime.lastError) {
+        statusBox.textContent = "Open MIT App Inventor first.";
+        return;
+      }
+
+      statusBox.textContent = response?.ok
+        ? "Inspection requested. Check App Inventor console."
+        : response?.error || "Inspection failed.";
     }
   );
 });

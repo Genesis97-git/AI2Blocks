@@ -114,3 +114,68 @@ Future improvements:
 - Avoid overlapping existing blocks in the workspace.
 - Optionally place generated blocks near the current viewport or mouse position.
 - Eventually use actual rendered block dimensions after import for smarter layout.
+
+## Export Blocks as Templates
+
+Allow users to save blocks from the current App Inventor workspace as reusable XML templates.
+
+### Export Options
+
+- Export selected block only
+- Export selected block stack
+- Export all blocks in the workspace
+- Download exported blocks as `.xml`
+- Save exported templates into a local template library
+
+### Use Cases
+
+- Create reusable personal block snippets
+- Build an unlimited local Backpack replacement
+- Share templates through GitHub
+- Create examples for testing AI2Blocks
+- Quickly reverse-engineer new block types
+
+### Future Workflow
+
+```text
+Select blocks in App Inventor
+        ↓
+Click "Export as Template"
+        ↓
+Download XML file
+        ↓
+Reuse later with AI2Blocks XML loader
+```
+
+## No-DevTools Reverse Engineering
+
+Avoid requiring users or contributors to open the browser console.
+
+### Goal
+
+Move reverse-engineering tools directly into the AI2Blocks extension UI.
+
+### Features
+
+- Inspect selected block from the extension popup.
+- Display inspection JSON directly in the popup.
+- Copy inspection JSON to clipboard from the popup.
+- Download inspection result as `.json`.
+- Export selected block or stack as Blockly XML.
+- Export all workspace blocks as Blockly XML.
+- Download exported XML as reusable templates.
+
+### Multiple Selection Inspection
+
+If multiple blocks are selected:
+
+- Block inspection should inspect each selected block independently.
+- Stack inspection should inspect each selected block's root stack, avoiding duplicates.
+- Workspace inspection should inspect/export the entire workspace.
+
+### Reason
+
+The extension popup has user focus, so clipboard actions should work more reliably there than from injected page scripts.
+
+This also makes AI2Blocks easier for non-technical users and contributors, since they will not need to use F12 DevTools.
+

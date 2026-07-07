@@ -8,17 +8,32 @@ function injectScriptFile(file) {
 injectScriptFile("injected.js");
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type !== "AI2BLOCKS_GENERATE") {
-    return;
+
+  switch (message.type) {
+
+    case "AI2BLOCKS_GENERATE":
+      window.postMessage(
+        {
+          type: "AI2BLOCKS_GENERATE_FROM_EXTENSION",
+          scriptText: message.scriptText
+        },
+        "*"
+      );
+      sendResponse({ ok: true });
+      break;
+
+    case "AI2BLOCKS_INSPECT_BLOCK":
+      window.postMessage(
+        {
+          type: "AI2BLOCKS_INSPECT_BLOCK_FROM_EXTENSION"
+        },
+        "*"
+      );
+      sendResponse({ ok: true });
+      break;
+
+    default:
+      sendResponse({ ok: false, error: "Unknown message type." });
   }
 
-  window.postMessage(
-    {
-      type: "AI2BLOCKS_GENERATE_FROM_EXTENSION",
-      scriptText: message.scriptText
-    },
-    "*"
-  );
-
-  sendResponse({ ok: true });
 });

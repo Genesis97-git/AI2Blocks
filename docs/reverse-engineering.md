@@ -94,6 +94,27 @@ const blockXml = new DOMParser().parseFromString(xmlText, "text/xml").documentEl
 Blockly.Xml.domToBlock(blockXml, ws);
 ```
 
+## Multi-block Selection
+
+MIT App Inventor supports selecting multiple blocks using Shift-click or drag selection.
+
+### Discovery
+
+- `Blockly.getSelected()` returns a selection object when multiple blocks are selected.
+- The selected blocks are available via:
+
+```js
+Array.from(Blockly.getSelected().subDraggables.keys())
+```
+
+### Ordering
+
+- **Shift-click selection** preserves the order in which the user selected the blocks.
+- **Drag selection** appears to return blocks in Blockly's internal order (currently matching visual order in tests).
+- Therefore, inspection tools should **not rely on the order being meaningful**.
+
+For multi-block inspection, each block should be inspected independently.
+
 ## Property Setter Block
 
 Example:
