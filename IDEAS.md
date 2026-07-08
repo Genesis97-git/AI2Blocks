@@ -179,3 +179,12 @@ The extension popup has user focus, so clipboard actions should work more reliab
 
 This also makes AI2Blocks easier for non-technical users and contributors, since they will not need to use F12 DevTools.
 
+## Global Variable Name Safety
+
+Before importing generated blocks, AI2Blocks should detect whether a script declares a global variable that already exists in the current workspace.
+
+If a duplicate global variable name is found, the extension should warn the user instead of relying on App Inventor's automatic renaming behavior.
+
+Reason:
+
+App Inventor may rename a duplicate declaration, for example `score` → `score2`, but generated getter/setter blocks may still reference `global score`, causing confusing mismatches.

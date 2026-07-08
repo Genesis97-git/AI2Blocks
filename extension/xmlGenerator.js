@@ -31,6 +31,15 @@ function generateNode(node) {
     case "StatementStack":
       return generateStatementStack(node);
 
+    case "GlobalDeclaration":
+      return generateGlobalDeclaration(node);
+
+    case "GlobalVariableGet":
+      return generateGlobalVariableGet(node);
+
+    case "GlobalVariableSet":
+      return generateGlobalVariableSet(node);
+
     default:
       throw new Error(`Unsupported AST node type: ${node.type}`);
   }
@@ -69,6 +78,23 @@ function generateComponentEvent(node) {
 </block>`.trim();
 }
 
+function generateComponentMethodCall(node) {
+  const componentType = guessComponentType(node.component);
+
+  const argsXml = node.args
+    .map((arg, index) => `
+  <value name="ARG${index}">
+    ${generateNode(arg)}
+  </value>`)
+    .join("");
+
+  return `
+<block type="component_method">
+  <mutation component_type="${escapeXml(componentType)}" method_name="${escapeXml(node.method)}" is_generic="false" instance_name="${escapeXml(node.component)}"></mutation>
+  <field name="COMPONENT_SELECTOR">${escapeXml(node.component)}</field>${argsXml}
+</block>`.trim();
+}
+
 function generateGetProperty(node) {
   const componentType = guessComponentType(node.component);
 
@@ -86,6 +112,33 @@ function generateSetProperty(node) {
   return `
 <block type="component_set_get">
   <mutation component_type="${escapeXml(componentType)}" set_or_get="set" property_name="${escapeXml(node.property)}" is_generic="false" instance_name="${escapeXml(node.component)}"></mutation>
+  <value name="VALUE">
+    ${generateNode(node.value)}
+  </value>
+</block>`.trim();
+}
+
+function generateGlobalDeclaration(node) {
+  return `
+<block type="global_declaration">
+  <field name="NAME">${escapeXml(node.name)}</field>
+  <value name="VALUE">
+    ${generateNode(node.value)}
+  </value>
+</block>`.trim();
+}
+
+function generateGlobalVariableGet(node) {
+  return `
+<block type="lexical_variable_get">
+  <field name="VAR">global ${escapeXml(node.name)}</field>
+</block>`.trim();
+}
+
+function generateGlobalVariableSet(node) {
+  return `
+<block type="lexical_variable_set">
+  <field name="VAR">global ${escapeXml(node.name)}</field>
   <value name="VALUE">
     ${generateNode(node.value)}
   </value>
@@ -110,23 +163,6 @@ function generateBooleanLiteral(node) {
   return `
 <block type="logic_boolean">
   <field name="BOOL">${node.value ? "TRUE" : "FALSE"}</field>
-</block>`.trim();
-}
-
-function generateComponentMethodCall(node) {
-  const componentType = guessComponentType(node.component);
-
-  const argsXml = node.args
-    .map((arg, index) => `
-  <value name="ARG${index}">
-    ${generateNode(arg)}
-  </value>`)
-    .join("");
-
-  return `
-<block type="component_method">
-  <mutation component_type="${escapeXml(componentType)}" method_name="${escapeXml(node.method)}" is_generic="false" instance_name="${escapeXml(node.component)}"></mutation>
-  <field name="COMPONENT_SELECTOR">${escapeXml(node.component)}</field>${argsXml}
 </block>`.trim();
 }
 

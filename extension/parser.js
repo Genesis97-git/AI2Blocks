@@ -12,51 +12,85 @@ function parseAI2BlocksScript(scriptText) {
   const body = [];
 
   for (const paragraph of paragraphs) {
-    body.push(parseTopLevelGroup(paragraph));
+    body.push(...parseTopLevelGroup(paragraph));
   }
 
   return new Program(body);
 }
 
 function parseTopLevelGroup(lines) {
-  const firstLine = lines[0];
-  const eventMatch = firstLine.match(/^when\s+(\w+)\.(\w+)$/);
+  const nodes = [];
+  let currentStack = [];
 
-  if (eventMatch) {
-    const statements = lines.slice(1).map(parseStatement);
+  function flushCurrentStack() {
+    if (currentStack.length === 0) {
+      return;
+    }
 
-    return new ComponentEvent(
-      eventMatch[1],
-      eventMatch[2],
-      statements
-    );
+    const firstLine = currentStack[0];
+    const eventMatch = firstLine.match(/^when\s+(\w+)\.(\w+)$/);
+
+    if (eventMatch) {
+      nodes.push(
+        new ComponentEvent(
+          eventMatch[1],
+          eventMatch[2],
+          currentStack.slice(1).map(parseStatement)
+        )
+      );
+    } else {
+      nodes.push(
+        new StatementStack(
+          currentStack.map(parseStatement)
+        )
+      );
+    }
+
+    currentStack = [];
   }
 
-  return new StatementStack(lines.map(parseStatement));
+  for (const line of lines) {
+    const globalDeclarationMatch = line.match(
+      /^initialize\s+global\s+(\w+)\s+to\s+(.+)$/
+    );
+
+    if (globalDeclarationMatch) {
+      flushCurrentStack();
+      nodes.push(parseGlobalDeclaration(line));
+      continue;
+    }
+
+    currentStack.push(line);
+  }
+
+  flushCurrentStack();
+
+  return nodes;
 }
 
-function parseEvent(lines, startIndex) {
-  const eventMatch = lines[startIndex].match(/^when\s+(\w+)\.(\w+)$/);
+function parseGlobalDeclaration(line) {
+  const match = line.match(/^initialize\s+global\s+(\w+)\s+to\s+(.+)$/);
 
-  const statements = [];
-  let i = startIndex + 1;
-
-  while (i < lines.length && !lines[i].startsWith("when ")) {
-    statements.push(parseStatement(lines[i]));
-    i++;
+  if (!match) {
+    throw new Error(`Invalid global declaration: ${line}`);
   }
 
-  return {
-    node: new ComponentEvent(
-      eventMatch[1],
-      eventMatch[2],
-      statements
-    ),
-    nextIndex: i
-  };
+  return new GlobalDeclaration(
+    match[1],
+    parseValue(match[2])
+  );
 }
 
 function parseStatement(line) {
+  const globalSetMatch = line.match(/^set\s+global\s+(\w+)\s+to\s+(.+)$/);
+
+  if (globalSetMatch) {
+    return new GlobalVariableSet(
+      globalSetMatch[1],
+      parseValue(globalSetMatch[2])
+    );
+  }
+
   const setterMatch = line.match(/^set\s+(\w+)\.(\w+)\s+to\s+(.+)$/);
 
   if (setterMatch) {
@@ -108,6 +142,12 @@ function parseValue(rawValue) {
       getterMatch[1],
       getterMatch[2]
     );
+  }
+
+  const globalGetMatch = rawValue.match(/^get\s+global\s+(\w+)$/);
+
+  if (globalGetMatch) {
+    return new GlobalVariableGet(globalGetMatch[1]);
   }
 
   throw new Error(`Unsupported value: ${rawValue}`);

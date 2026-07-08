@@ -41,6 +41,22 @@ set Label1.Text to "Hello"
 
 Produces two independent stacks in the Blockly workspace.
 
+### Top-level blocks
+
+A paragraph may produce multiple top-level blocks.
+
+Example:
+
+initialize global score to 0
+set global score to 10
+
+Produces:
+
+- Global declaration
+- Statement stack
+
+Global declarations are always standalone blocks and never connect to statement stacks.
+
 ## Forgiving Parsing
 
 AI2Blocks should prefer valid structured syntax, but avoid failing completely when possible.

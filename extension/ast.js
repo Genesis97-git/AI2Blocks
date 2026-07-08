@@ -67,3 +67,26 @@ class StatementStack {
     this.statements = statements;
   }
 }
+
+class GlobalDeclaration {
+  constructor(name, value) {
+    this.type = "GlobalDeclaration";
+    this.name = name;
+    this.value = value;
+  }
+}
+
+class GlobalVariableGet {
+  constructor(name) {
+    this.type = "GlobalVariableGet";
+    this.name = name;
+  }
+}
+
+class GlobalVariableSet {
+  constructor(name, value) {
+    this.type = "GlobalVariableSet";
+    this.name = name;
+    this.value = value;
+  }
+}
