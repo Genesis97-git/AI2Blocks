@@ -188,3 +188,172 @@ If a duplicate global variable name is found, the extension should warn the user
 Reason:
 
 App Inventor may rename a duplicate declaration, for example `score` → `score2`, but generated getter/setter blocks may still reference `global score`, causing confusing mismatches.
+
+## Full App Generation
+
+Goal: generate both App Inventor Designer components and Blocks from one AI-generated description.
+
+Current status:
+- Blocks generation: started and working
+- Designer generation: not implemented yet
+
+Milestone:
+Idea → component tree → blocks → ready App Inventor project
+
+## Edit Existing Blocks
+
+Allow AI2Blocks to modify blocks that were already generated or already exist in the workspace.
+
+### Use Case
+
+AI generates an app. The user imports it, tests it, notices a mistake, and asks AI for a correction. Instead of manually deleting and recreating blocks, the user can paste an edit instruction into AI2Blocks.
+
+### Possible Syntax
+
+```text
+edit selected
+replace with
+set Label1.Text to "Corrected text"
+```
+
+### Possible Strategies
+- Replace currently selected block or stack.
+- Replace a matching event block, such as when Button1.Click.
+- Track generated blocks with AI2Blocks metadata IDs.
+- Delete old generated blocks before inserting corrected blocks.
+
+### Notes
+This should be implemented later, after block export/import and selection tools are more mature.
+
+## Symbol-Free Syntax Mode
+
+Consider adding an optional mode that allows users to write AI2Blocks code without programming symbols.
+
+### Goal
+
+Make AI2Blocks easier for beginners, younger students, or users uncomfortable with symbolic operators.
+
+### Examples
+
+```text
+get global score is greater than 10
+```
+
+## Flow-First Design
+
+AI2Blocks should preserve the user's flow.
+
+Whenever possible, users should remain focused on expressing their intent instead of manipulating the workspace.
+
+Features should prioritize:
+
+- Continuous typing
+- Minimal mouse usage
+- Minimal modifier-key usage
+- Minimal dragging
+- Minimal clicking
+- Minimal context switching
+
+The user should spend more time thinking about the application and less time operating the editor.
+
+## Full Project Generation
+
+### Goal
+
+Extend AI2Blocks beyond block generation to support complete MIT App Inventor project generation.
+
+Instead of generating only Blockly blocks, AI2Blocks should eventually be capable of generating an entire application ready to import into MIT App Inventor.
+
+---
+
+### Future Workflow
+
+```text
+Idea
+        ↓
+AI
+        ↓
+Generate AI2Blocks Project
+        ↓
+Review / Edit
+        ↓
+Package
+        ↓
+.aia
+        ↓
+Import into MIT App Inventor
+```
+
+The review step allows the user to inspect and modify generated files before packaging the final application.
+
+This keeps the workflow transparent while preserving the flexibility of AI-assisted development.
+
+---
+
+### Future Project Structure
+
+An AI2Blocks application may eventually contain:
+
+- Designer definition
+- Blocks
+- Assets (images, sounds, etc.)
+- Project metadata
+- Documentation
+
+Example:
+
+```text
+CounterApp/
+├── app.ai2
+├── assets/
+│   ├── icon.png
+│   └── click.wav
+├── screenshots/
+│   └── preview.png
+└── README.md
+```
+
+---
+
+### Possible Outputs
+
+AI2Blocks should support multiple output formats generated from the same AI2Blocks source.
+
+- Chrome extension (inject into an existing project)
+- Blockly XML
+- Complete `.aia` project
+- Future export formats
+
+---
+
+### Architecture
+
+The parser and AST should remain independent of the output format.
+
+```text
+AI2Blocks Language
+        ↓
+Parser
+        ↓
+AST
+       ├── Blockly Generator
+       ├── Designer Generator
+       ├── XML Generator
+       └── AIA Generator
+```
+
+---
+
+### Design Principle
+
+The Chrome extension is the first frontend of AI2Blocks, not necessarily the final product.
+
+The AI2Blocks language and compiler should remain independent of any particular frontend, allowing future tools to share the same parser and generators.
+
+---
+
+### Notes
+
+MIT App Inventor `.aia` files are ZIP archives containing project metadata, Designer files, Blockly files, and assets.
+
+AI2Blocks should investigate generating complete `.aia` projects once the language is sufficiently mature.

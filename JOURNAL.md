@@ -135,3 +135,14 @@ Possible examples include:
 Because these templates are stored as regular files, they can be organized into folders, version-controlled with Git, shared through GitHub, and collaboratively improved by the community.
 
 This realization expanded the scope of AI2Blocks. Rather than being only an AI-to-Blockly converter, the project has the potential to become a general-purpose productivity toolkit for MIT App Inventor development, with AI-powered code generation as one of its core features.
+
+## Media
+
+- [x] Hello AI2Blocks
+- [x] First working generated app
+- [ ] First variables demo
+- [ ] First expressions demo
+- [ ] First complete generated app
+- [ ] First Designer generation
+- [ ] First AI conversation demo
+- [ ] First public release demo

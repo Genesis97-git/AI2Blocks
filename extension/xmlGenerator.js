@@ -40,6 +40,12 @@ function generateNode(node) {
     case "GlobalVariableSet":
       return generateGlobalVariableSet(node);
 
+    case "BinaryExpression":
+      return generateBinaryExpression(node);
+
+    case "ComparisonExpression":
+      return generateComparisonExpression(node);
+
     default:
       throw new Error(`Unsupported AST node type: ${node.type}`);
   }
@@ -166,9 +172,75 @@ function generateBooleanLiteral(node) {
 </block>`.trim();
 }
 
+function generateBinaryExpression(node) {
+  if (node.operator === "+" || node.operator === "*") {
+    const blockType = node.operator === "+"
+      ? "math_add"
+      : "math_multiply";
+
+    return `
+<block type="${blockType}">
+  <mutation items="2"></mutation>
+  <value name="NUM0">
+    ${generateNode(node.left)}
+  </value>
+  <value name="NUM1">
+    ${generateNode(node.right)}
+  </value>
+</block>`.trim();
+  }
+
+  if (node.operator === "-" || node.operator === "/") {
+    const blockType = node.operator === "-"
+      ? "math_subtract"
+      : "math_division";
+
+    return `
+<block type="${blockType}">
+  <value name="A">
+    ${generateNode(node.left)}
+  </value>
+  <value name="B">
+    ${generateNode(node.right)}
+  </value>
+</block>`.trim();
+  }
+
+  throw new Error(`Unsupported binary operator: ${node.operator}`);
+}
+
+function generateComparisonExpression(node) {
+  const opMap = {
+    "=": "EQ",
+    "<": "LT",
+    ">": "GT",
+    "!=": "NEQ",
+    "<=": "LTE",
+    ">=": "GTE"
+  };
+
+  const op = opMap[node.operator];
+
+  if (!op) {
+    throw new Error(`Unsupported comparison operator: ${node.operator}`);
+  }
+
+  return `
+<block type="math_compare">
+  <field name="OP">${op}</field>
+  <value name="A">
+    ${generateNode(node.left)}
+  </value>
+  <value name="B">
+    ${generateNode(node.right)}
+  </value>
+</block>`.trim();
+}
+
 function generateStatementStack(node) {
   return chainStatements(node.statements);
 }
+
 
 function chainStatements(statementNodes) {
   if (statementNodes.length === 0) {

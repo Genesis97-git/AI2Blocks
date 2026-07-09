@@ -90,3 +90,21 @@ class GlobalVariableSet {
     this.value = value;
   }
 }
+
+class BinaryExpression {
+  constructor(operator, left, right) {
+    this.type = "BinaryExpression";
+    this.operator = operator;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+class ComparisonExpression {
+  constructor(operator, left, right) {
+    this.type = "ComparisonExpression";
+    this.operator = operator;
+    this.left = left;
+    this.right = right;
+  }
+}

@@ -123,6 +123,35 @@ function parseStatement(line) {
 function parseValue(rawValue) {
   rawValue = rawValue.trim();
 
+  const comparisonMatch = rawValue.match(
+    /^(.+?)\s*(>=|<=|!=|<>|==|=|>|<)\s*(.+)$/
+  );
+
+  if (comparisonMatch) {
+    const aliases = {
+      "==": "=",
+      "<>": "!="
+    };
+
+    const operator = aliases[comparisonMatch[2]] ?? comparisonMatch[2];
+
+    return new ComparisonExpression(
+      operator,
+      parseValue(comparisonMatch[1]),
+      parseValue(comparisonMatch[3])
+    );
+  }
+
+  const binaryMatch = rawValue.match(/^(.+)\s*([+\-*/])\s*(.+)$/);
+
+  if (binaryMatch) {
+    return new BinaryExpression(
+      binaryMatch[2],
+      parseValue(binaryMatch[1]),
+      parseValue(binaryMatch[3])
+    );
+  }
+
   if (/^".*"$/.test(rawValue)) {
     return new StringLiteral(rawValue.slice(1, -1));
   }
