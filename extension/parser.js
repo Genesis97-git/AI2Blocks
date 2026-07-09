@@ -123,6 +123,22 @@ function parseStatement(line) {
 function parseValue(rawValue) {
   rawValue = rawValue.trim();
 
+  const notMatch = rawValue.match(/^not\s+(.+)$/);
+
+  if (notMatch) {
+    return new NotExpression(parseValue(notMatch[1]));
+  }
+
+  const booleanMatch = rawValue.match(/^(.+?)\s+(and|or)\s+(.+)$/);
+
+  if (booleanMatch) {
+    return new BooleanExpression(
+      booleanMatch[2],
+      parseValue(booleanMatch[1]),
+      parseValue(booleanMatch[3])
+    );
+  }
+
   const comparisonMatch = rawValue.match(
     /^(.+?)\s*(>=|<=|!=|<>|==|=|>|<)\s*(.+)$/
   );

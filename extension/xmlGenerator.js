@@ -46,6 +46,12 @@ function generateNode(node) {
     case "ComparisonExpression":
       return generateComparisonExpression(node);
 
+    case "BooleanExpression":
+      return generateBooleanExpression(node);
+
+    case "NotExpression":
+      return generateNotExpression(node);
+
     default:
       throw new Error(`Unsupported AST node type: ${node.type}`);
   }
@@ -169,6 +175,37 @@ function generateBooleanLiteral(node) {
   return `
 <block type="logic_boolean">
   <field name="BOOL">${node.value ? "TRUE" : "FALSE"}</field>
+</block>`.trim();
+}
+
+function generateBooleanExpression(node) {
+  const blockType = node.operator === "and"
+    ? "logic_operation"
+    : "logic_or";
+
+  const op = node.operator === "and"
+    ? "AND"
+    : "OR";
+
+  return `
+<block type="${blockType}">
+  <mutation items="2"></mutation>
+  <field name="OP">${op}</field>
+  <value name="A">
+    ${generateNode(node.left)}
+  </value>
+  <value name="B">
+    ${generateNode(node.right)}
+  </value>
+</block>`.trim();
+}
+
+function generateNotExpression(node) {
+  return `
+<block type="logic_negate">
+  <value name="BOOL">
+    ${generateNode(node.value)}
+  </value>
 </block>`.trim();
 }
 

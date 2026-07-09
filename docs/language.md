@@ -22,11 +22,25 @@ set Label1.Text to "Hello"
 
 -42
 
-### Boolean
+### Boolean Logic
 
-true
+AI2Blocks supports boolean expressions:
 
-false
+```text
+true and false
+true or false
+not true
+```
+Boolean logic can be combined with comparisons:
+```text
+get global score > 10 and Label1.Visible
+not get global gameOver
+```
+Current behavior:
+
+- and generates App Inventor logic AND
+- or generates App Inventor logic OR
+- not generates App Inventor logic NOT
 
 ## Global Variables
 

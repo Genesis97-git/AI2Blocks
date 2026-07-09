@@ -108,3 +108,19 @@ class ComparisonExpression {
     this.right = right;
   }
 }
+
+class BooleanExpression {
+  constructor(operator, left, right) {
+    this.type = "BooleanExpression";
+    this.operator = operator;
+    this.left = left;
+    this.right = right;
+  }
+}
+
+class NotExpression {
+  constructor(value) {
+    this.type = "NotExpression";
+    this.value = value;
+  }
+}

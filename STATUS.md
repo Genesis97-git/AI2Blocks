@@ -30,7 +30,7 @@ Current milestone: Expressions
 ### Expressions
 - [x] Arithmetic
 - [x] Comparison
-- [ ] Boolean logic
+- [x] Boolean logic
 - [ ] Text operations
 - [ ] List operations
 - [ ] Dictionary operations
