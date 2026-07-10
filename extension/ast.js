@@ -124,3 +124,11 @@ class NotExpression {
     this.value = value;
   }
 }
+
+class IfStatement {
+  constructor(condition, body = []) {
+    this.type = "IfStatement";
+    this.condition = condition;
+    this.body = body;
+  }
+}

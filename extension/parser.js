@@ -23,30 +23,34 @@ function parseTopLevelGroup(lines) {
   let currentStack = [];
 
   function flushCurrentStack() {
-    if (currentStack.length === 0) {
-      return;
-    }
+  if (currentStack.length === 0) {
+    return;
+  }
 
-    const firstLine = currentStack[0];
-    const eventMatch = firstLine.match(/^when\s+(\w+)\.(\w+)$/);
+  const firstLine = currentStack[0];
+  const eventMatch = firstLine.match(/^when\s+(\w+)\.(\w+)$/);
 
-    if (eventMatch) {
-      nodes.push(
-        new ComponentEvent(
-          eventMatch[1],
-          eventMatch[2],
-          currentStack.slice(1).map(parseStatement)
-        )
-      );
-    } else {
-      nodes.push(
-        new StatementStack(
-          currentStack.map(parseStatement)
-        )
-      );
-    }
+  if (eventMatch) {
+    const result = parseStatementSequence(
+      currentStack.slice(1)
+    );
 
-    currentStack = [];
+    nodes.push(
+      new ComponentEvent(
+        eventMatch[1],
+        eventMatch[2],
+        result.statements
+      )
+    );
+  } else {
+    const result = parseStatementSequence(currentStack);
+
+    nodes.push(
+      new StatementStack(result.statements)
+    );
+  }
+
+  currentStack = [];
   }
 
   for (const line of lines) {
@@ -118,6 +122,99 @@ function parseStatement(line) {
   }
 
   throw new Error(`Unsupported statement: ${line}`);
+}
+
+function parseIfStatement(lines, startIndex) {
+  const line = lines[startIndex];
+
+  const hasParenthesizedBody = line.endsWith("(");
+
+  const conditionText = hasParenthesizedBody
+    ? line.slice(2, -1).trim()
+    : line.slice(2).trim();
+
+  if (!conditionText) {
+    throw new Error(`Missing condition in: ${line}`);
+  }
+
+  const condition = parseValue(conditionText);
+
+  if (hasParenthesizedBody) {
+    const bodyResult = parseStatementSequence(
+      lines,
+      startIndex + 1,
+      true
+    );
+
+    return {
+      node: new IfStatement(condition, bodyResult.statements),
+      nextIndex: bodyResult.nextIndex
+    };
+  }
+
+  const nextIndex = startIndex + 1;
+
+  if (nextIndex >= lines.length || lines[nextIndex] === ")") {
+    throw new Error(`If statement has no body: ${line}`);
+  }
+
+  let bodyNode;
+
+  if (/^if\s+/.test(lines[nextIndex])) {
+    const nestedResult = parseIfStatement(lines, nextIndex);
+    bodyNode = nestedResult.node;
+
+    return {
+      node: new IfStatement(condition, [bodyNode]),
+      nextIndex: nestedResult.nextIndex
+    };
+  }
+
+  bodyNode = parseStatement(lines[nextIndex]);
+
+  return {
+    node: new IfStatement(condition, [bodyNode]),
+    nextIndex: nextIndex + 1
+  };
+}
+
+function parseStatementSequence(lines, startIndex = 0, stopAtClosingParen = false) {
+  const statements = [];
+  let i = startIndex;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    if (line === ")") {
+      if (!stopAtClosingParen) {
+        throw new Error("Unexpected closing parenthesis.");
+      }
+
+      return {
+        statements,
+        nextIndex: i + 1
+      };
+    }
+
+    if (/^if\s+/.test(line)) {
+      const result = parseIfStatement(lines, i);
+      statements.push(result.node);
+      i = result.nextIndex;
+      continue;
+    }
+
+    statements.push(parseStatement(line));
+    i++;
+  }
+
+  if (stopAtClosingParen) {
+    throw new Error("Missing closing parenthesis for statement body.");
+  }
+
+  return {
+    statements,
+    nextIndex: i
+  };
 }
 
 function parseValue(rawValue) {

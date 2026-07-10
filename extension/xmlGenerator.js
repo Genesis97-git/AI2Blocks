@@ -52,6 +52,9 @@ function generateNode(node) {
     case "NotExpression":
       return generateNotExpression(node);
 
+    case "IfStatement":
+      return generateIfStatement(node);
+
     default:
       throw new Error(`Unsupported AST node type: ${node.type}`);
   }
@@ -271,6 +274,20 @@ function generateComparisonExpression(node) {
   <value name="B">
     ${generateNode(node.right)}
   </value>
+</block>`.trim();
+}
+
+function generateIfStatement(node) {
+  const bodyXml = chainStatements(node.body);
+
+  return `
+<block type="controls_if">
+  <value name="IF0">
+    ${generateNode(node.condition)}
+  </value>
+  <statement name="DO0">
+    ${bodyXml}
+  </statement>
 </block>`.trim();
 }
 
