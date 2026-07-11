@@ -1,49 +1,82 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI2Blocks</title>
-  <style>
-    body {
-      width: 360px;
-      font-family: Arial, sans-serif;
-      padding: 12px;
-    }
-
-    textarea {
-      width: 100%;
-      height: 180px;
-      box-sizing: border-box;
-      resize: vertical;
-    }
-
-    button {
-      width: 100%;
-      margin-top: 10px;
-      padding: 10px;
-      cursor: pointer;
-    }
-
-    #status {
-      margin-top: 10px;
-      font-size: 13px;
-    }
-  </style>
+  <link rel="stylesheet" href="popup.css">
 </head>
+
 <body>
-  <h2>AI2Blocks</h2>
+  <main class="app">
 
-  <input type="file" id="fileInput" accept=".xml,text/xml">
+    <header class="app-header">
+      <img
+        class="app-logo"
+        src="icons/logo.svg"
+        alt=""
+        aria-hidden="true"
+      >
 
-  <textarea id="input" placeholder="Paste AI2Blocks script or Blockly XML..."></textarea>
+      <div class="app-heading">
+        <h1>AI2Blocks</h1>
+        <p>AI-assisted development for MIT App Inventor</p>
+      </div>
+    </header>
 
-  <button id="generate">Import XML</button>
-  <button id="inspect">Inspect Selected Block</button>
+    <label for="input">AI2Blocks Code</label>
 
-  <div id="status"></div>
-  <script src="ast.js"></script>
-  <script src="parser.js"></script>
-  <script src="xmlGenerator.js"></script>
-  <script src="popup.js"></script>
+    <textarea
+      id="input"
+      spellcheck="false"
+      placeholder='Example:
+
+when Button1.Click
+set Label1.Text to "Hello!"'
+    ></textarea>
+
+    <div class="button-row">
+      <button id="generate" class="primary" type="button">
+        Generate Blocks
+      </button>
+
+      <button
+        id="inspect"
+        class="icon-button"
+        type="button"
+        title="Inspect selected block"
+        aria-label="Inspect selected block"
+      >
+        <img
+          class="button-icon"
+          src="icons/inspect.svg"
+          alt=""
+          aria-hidden="true"
+        >
+      </button>
+    </div>
+
+    <div id="status" aria-live="polite"></div>
+
+    <details>
+      <summary>Advanced Tools</summary>
+
+      <div class="advanced-content">
+        <label for="fileInput">Load AI2Blocks or XML file</label>
+
+        <input
+          id="fileInput"
+          type="file"
+          accept=".ai2,.xml,.txt"
+        >
+      </div>
+    </details>
+
+  </main>
+
+  <script src="js/ast.js"></script>
+  <script src="js/parser.js"></script>
+  <script src="js/xmlGenerator.js"></script>
+  <script src="js/popup.js"></script>
 </body>
 </html>

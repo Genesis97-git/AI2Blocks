@@ -1,6 +1,8 @@
 # AI2Blocks Roadmap
 
-Current milestone: Expressions
+## Current Version
+
+**v0.3.0**
 
 ---
 
@@ -36,8 +38,8 @@ Current milestone: Expressions
 - [ ] Dictionary operations
 
 ### Control Flow
-- [ ] If
-- [ ] If / Else
+- [x] If
+- [x] If / Else
 - [ ] While
 - [ ] For each
 - [ ] For range
@@ -54,7 +56,7 @@ Current milestone: Expressions
 - [x] Multiple top-level blocks
 - [x] Top-level statement stacks
 - [x] Blank line stack separation
-- [ ] Parentheses for statement grouping
+- [x] Parentheses for statement grouping
 - [ ] Comments
 
 ---
@@ -72,8 +74,8 @@ Current milestone: Expressions
 - [ ] Local variables
 
 ### Remaining
-- [ ] Expressions
-- [ ] Control flow
+- [x] Expressions
+- [x] Control flow
 - [ ] Procedures
 
 ---
@@ -118,6 +120,7 @@ Current milestone: Expressions
 - [x] Generate blocks
 - [x] Inspect selected block
 - [x] Inspect multiple selected blocks
+- [x] Popup redesign
 
 ### Planned
 - [ ] Save selected blocks as XML template

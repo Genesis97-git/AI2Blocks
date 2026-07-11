@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AI2Blocks",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Generate MIT App Inventor blocks from AI-generated descriptions.",
   "permissions": ["scripting", "activeTab"],
   "host_permissions": [
@@ -22,13 +22,13 @@
 		"https://ai2a.appinventor.mit.edu/*",
 		"https://code2.appinventor.mit.edu/*"
       ],
-      "js": ["content.js"],
+      "js": ["js/content.js"],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["injected.js"],
+      "resources": ["js/injected.js"],
       "matches": [
         "https://ai2.appinventor.mit.edu/*",
         "https://ai2-test.appinventor.mit.edu/*",

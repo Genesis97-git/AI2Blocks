@@ -235,6 +235,131 @@ Produces:
 
 Global declarations are always standalone blocks and never connect to statement stacks.
 
+## Control flow
+### If
+
+Use if to run statements only when a condition is true.
+
+A single-statement body does not require parentheses:
+```text
+if get global score >= 10
+set Label1.Text to "Winner!"
+```
+For multiple statements, wrap the body in parentheses:
+```text
+if get global score >= 10 (
+set Label1.Text to "Winner!"
+set Button1.Enabled to false
+call Notifier1.ShowAlert("Target reached!")
+)
+```
+The condition may use any supported boolean expression:
+```text
+if true
+set Label1.Visible to true
+if get global score > 0 and Button1.Enabled
+set Label1.Text to "Ready"
+```
+### If / Else
+
+Use else to provide an alternative branch when the if condition is false.
+
+Single-statement form:
+```text
+if get global score >= 10
+set Label1.Text to "Winner!"
+else
+set Label1.Text to "Keep going"
+```
+Grouped form:
+```text
+if get global score >= 10 (
+set Label1.Text to "Winner!"
+set Button1.Enabled to false
+)
+else (
+set Label1.Text to "Keep going"
+set Button1.Enabled to true
+)
+```
+### Else If
+
+One or more else if branches may appear between the initial if and an optional final else.
+```text
+if get global score >= 10
+set Label1.Text to "Excellent"
+else if get global score >= 7
+set Label1.Text to "Good"
+else if get global score >= 4
+set Label1.Text to "Average"
+else
+set Label1.Text to "Keep trying"
+```
+Each else if branch follows the same body rules as if:
+```text
+else if get global score >= 5 (
+set Label1.Text to "Almost there"
+set Button1.Enabled to true
+)
+```
+
+### Nested If Statements
+
+if statements may be nested inside other branches.
+```text
+if get global score > 0 (
+if get global score >= 10
+set Label1.Text to "Winner!"
+else
+set Label1.Text to "In progress"
+)
+```
+Without parentheses, an else belongs to the nearest unmatched if:
+```text
+if true
+if false
+set Label1.Text to "Inner true"
+else
+set Label1.Text to "Inner false"
+```
+Here, the else belongs to if false.
+
+### Body Grouping
+
+AI2Blocks does not use indentation to determine nesting.
+
+The rules are:
+
+- A body without parentheses contains exactly one statement.
+- A body wrapped in ( and ) may contain multiple statements.
+- Parentheses are optional when the body contains only one statement.
+- Indentation may be used for readability, but it does not affect parsing.
+
+Example:
+```text
+if get global score >= 3 (
+  set Label1.Text to "Target reached!"
+  set Button1.Enabled to false
+)
+```
+is parsed the same as:
+```text
+if get global score >= 3 (
+set Label1.Text to "Target reached!"
+set Button1.Enabled to false
+)
+```
+#### then
+
+Statement if does not use the word then.
+
+Canonical syntax:
+```text
+if get global score >= 10
+set Label1.Text to "Winner!"
+```
+The value-producing if then else expression may use then in a future version, but it is not currently implemented.
+
 ## Design Philosophy
 
 AI2Blocks should infer user intent whenever it can without introducing new language syntax.

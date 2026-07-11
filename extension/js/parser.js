@@ -127,11 +127,14 @@ function parseStatement(line) {
 function parseIfStatement(lines, startIndex) {
   const line = lines[startIndex];
 
-  const hasParenthesizedBody = line.endsWith("(");
+  const ifMatch = line.match(/^if\s+(.+?)(?:\s*\()?\s*$/);
 
-  const conditionText = hasParenthesizedBody
-    ? line.slice(2, -1).trim()
-    : line.slice(2).trim();
+  if (!ifMatch) {
+    throw new Error(`Invalid if statement: ${line}`);
+  }
+
+  const hasParenthesizedBody = line.endsWith("(");
+  const conditionText = ifMatch[1].trim();
 
   if (!conditionText) {
     throw new Error(`Missing condition in: ${line}`);
@@ -139,42 +142,124 @@ function parseIfStatement(lines, startIndex) {
 
   const condition = parseValue(conditionText);
 
-  if (hasParenthesizedBody) {
-    const bodyResult = parseStatementSequence(
-      lines,
-      startIndex + 1,
-      true
+  const bodyResult = parseStatementBody(
+    lines,
+    startIndex + 1,
+    hasParenthesizedBody,
+    "if"
+  );
+
+  let nextIndex = bodyResult.nextIndex;
+  const elseIfs = [];
+  let elseBody = [];
+
+  // Collect every consecutive else-if branch.
+  while (nextIndex < lines.length) {
+    const elseIfLine = lines[nextIndex];
+
+    const elseIfMatch = elseIfLine.match(
+      /^else\s+if\s+(.+?)(?:\s*\()?\s*$/
     );
 
-    return {
-      node: new IfStatement(condition, bodyResult.statements),
-      nextIndex: bodyResult.nextIndex
-    };
+    if (!elseIfMatch) {
+      break;
+    }
+
+    const elseIfHasParenthesizedBody =
+      elseIfLine.endsWith("(");
+
+    const elseIfConditionText =
+      elseIfMatch[1].trim();
+
+    if (!elseIfConditionText) {
+      throw new Error(
+        `Missing condition in: ${elseIfLine}`
+      );
+    }
+
+    const elseIfBodyResult = parseStatementBody(
+      lines,
+      nextIndex + 1,
+      elseIfHasParenthesizedBody,
+      "else if"
+    );
+
+    elseIfs.push({
+      condition: parseValue(elseIfConditionText),
+      body: elseIfBodyResult.statements
+    });
+
+    nextIndex = elseIfBodyResult.nextIndex;
   }
 
-  const nextIndex = startIndex + 1;
+  // Parse one optional final else branch.
+  if (nextIndex < lines.length) {
+    const elseLine = lines[nextIndex];
+    const elseMatch = elseLine.match(/^else\s*(\()?$/);
 
-  if (nextIndex >= lines.length || lines[nextIndex] === ")") {
-    throw new Error(`If statement has no body: ${line}`);
+    if (elseMatch) {
+      const elseHasParenthesizedBody =
+        Boolean(elseMatch[1]);
+
+      const elseResult = parseStatementBody(
+        lines,
+        nextIndex + 1,
+        elseHasParenthesizedBody,
+        "else"
+      );
+
+      elseBody = elseResult.statements;
+      nextIndex = elseResult.nextIndex;
+    }
   }
 
-  let bodyNode;
+  return {
+    node: new IfStatement(
+      condition,
+      bodyResult.statements,
+      elseIfs,
+      elseBody
+    ),
+    nextIndex
+  };
+}
 
-  if (/^if\s+/.test(lines[nextIndex])) {
-    const nestedResult = parseIfStatement(lines, nextIndex);
-    bodyNode = nestedResult.node;
+function parseStatementBody(
+  lines,
+  startIndex,
+  isParenthesized,
+  bodyName
+) {
+  if (isParenthesized) {
+    return parseStatementSequence(
+      lines,
+      startIndex,
+      true
+    );
+  }
+
+  if (
+    startIndex >= lines.length ||
+    lines[startIndex] === ")" ||
+    /^else\b/.test(lines[startIndex])
+  ) {
+    throw new Error(`${bodyName} has no body.`);
+  }
+
+  const line = lines[startIndex];
+
+  if (/^if\s+/.test(line)) {
+    const nestedResult = parseIfStatement(lines, startIndex);
 
     return {
-      node: new IfStatement(condition, [bodyNode]),
+      statements: [nestedResult.node],
       nextIndex: nestedResult.nextIndex
     };
   }
 
-  bodyNode = parseStatement(lines[nextIndex]);
-
   return {
-    node: new IfStatement(condition, [bodyNode]),
-    nextIndex: nextIndex + 1
+    statements: [parseStatement(line)],
+    nextIndex: startIndex + 1
   };
 }
 

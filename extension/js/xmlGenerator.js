@@ -278,16 +278,57 @@ function generateComparisonExpression(node) {
 }
 
 function generateIfStatement(node) {
-  const bodyXml = chainStatements(node.body);
+  const elseifCount = node.elseIfs.length;
+  const hasElse = node.elseBody.length > 0;
+
+  let mutation = "";
+
+  if (elseifCount > 0 || hasElse) {
+    const attributes = [];
+
+    if (elseifCount > 0) {
+      attributes.push(`elseif="${elseifCount}"`);
+    }
+
+    if (hasElse) {
+      attributes.push('else="1"');
+    }
+
+    mutation = `<mutation ${attributes.join(" ")}></mutation>`;
+  }
+
+  const elseifXml = node.elseIfs
+    .map((elseIf, index) => {
+      const branchIndex = index + 1;
+
+      return `
+  <value name="IF${branchIndex}">
+    ${generateNode(elseIf.condition)}
+  </value>
+  <statement name="DO${branchIndex}">
+    ${chainStatements(elseIf.body)}
+  </statement>`.trim();
+    })
+    .join("\n");
+
+  const elseXml = hasElse
+    ? `
+  <statement name="ELSE">
+    ${chainStatements(node.elseBody)}
+  </statement>`.trim()
+    : "";
 
   return `
 <block type="controls_if">
+  ${mutation}
   <value name="IF0">
     ${generateNode(node.condition)}
   </value>
   <statement name="DO0">
-    ${bodyXml}
+    ${chainStatements(node.body)}
   </statement>
+  ${elseifXml}
+  ${elseXml}
 </block>`.trim();
 }
 

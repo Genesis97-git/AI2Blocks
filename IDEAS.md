@@ -253,6 +253,9 @@ Features should prioritize:
 - Minimal dragging
 - Minimal clicking
 - Minimal context switching
+- Fast autocomplete
+- Context-aware suggestions
+- Keyboard-driven editing
 
 The user should spend more time thinking about the application and less time operating the editor.
 
@@ -357,3 +360,89 @@ The AI2Blocks language and compiler should remain independent of any particular 
 MIT App Inventor `.aia` files are ZIP archives containing project metadata, Designer files, Blockly files, and assets.
 
 AI2Blocks should investigate generating complete `.aia` projects once the language is sufficiently mature.
+
+# Smart Editor
+
+## Syntax Highlighting
+
+Color code AI2Blocks according to the recognized App Inventor block category.
+
+Examples:
+
+- Events
+- Variables
+- Control Flow
+- Logic
+- Math
+- Components
+- Properties
+- Text
+
+## Semantic Highlighting
+
+Highlight recognized project elements.
+
+Examples:
+
+- Existing components
+- Existing properties
+- Existing globals
+- Existing procedures
+
+Unknown identifiers should be highlighted immediately.
+
+## Project Awareness
+
+The editor should understand the currently opened App Inventor project.
+
+Features:
+
+- Existing components
+- Existing globals
+- Existing procedures
+- Existing media assets
+
+Suggestions should depend on the current project.
+
+## Autocomplete
+
+Minimize typing.
+
+Examples:
+
+score
+→ get global score
+
+Lab
+→ Label1
+
+ShowAl
+→ ShowAlert
+
+## Live Diagnostics
+
+Display parser and semantic errors while typing.
+
+Examples:
+
+- Unknown component
+- Unknown property
+- Unknown method
+- Unknown variable
+- Invalid syntax
+
+## Smart Suggestions
+
+When the parser recognizes likely user intent, offer automatic fixes.
+
+Examples:
+
+score
+→ get global score
+
+<>
+→ !=
+
+Label.Text
+→ Label1.Text
+

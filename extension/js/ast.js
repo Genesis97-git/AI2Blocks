@@ -126,9 +126,16 @@ class NotExpression {
 }
 
 class IfStatement {
-  constructor(condition, body = []) {
+  constructor(
+    condition,
+    body = [],
+    elseIfs = [],
+    elseBody = []
+  ) {
     this.type = "IfStatement";
     this.condition = condition;
     this.body = body;
+    this.elseIfs = elseIfs;
+    this.elseBody = elseBody;
   }
 }

@@ -5,7 +5,7 @@ function injectScriptFile(file) {
   document.documentElement.appendChild(script);
 }
 
-injectScriptFile("injected.js");
+injectScriptFile("js/injected.js");
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
